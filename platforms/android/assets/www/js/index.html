@@ -1,0 +1,69 @@
+<html>
+<head>
+    <title>Device Properties Example</title>
+    <link href="css/ionic.css" rel="stylesheet">
+    <script src="js/ionic.bundle.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8" src="codebird.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    <script type="text/javascript">
+    //Twitter
+    var cb = new Codebird;
+    cb.setConsumerKey("8g521OjdDD4zE7i4aQ6kEtm7c", "KZhbk3fDVOagZw8isOXgE4oFUwGRbCwxcip051uRommPk80QZG");
+    cd.setToken("15146063-zSMl0g0wDOtMSHCjswqYlykp9LU3BqwkWwk3yzQOT","apaEUUzNUltgzqgU6X9o6AXtCNcCLVRZmOyU410nM6SiI")
+
+    // Wait for device API libraries to load
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // device APIs are available
+    function onDeviceReady() {
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    }
+
+    // onSuccess Geolocation
+    function onSuccess(position) {
+        var longitude = document.getElementById('longitude');
+        longitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
+        var latitude = document.getElementById('latitude');
+        latitude.innerHTML = 'Your current latitude: '+ position.coords.latitude
+    }
+
+    // onError Callback receives a PositionError object
+    function onError(error) {
+        alert('code: '    + error.code    + '\n' +
+          'message: ' + error.message + '\n');
+    }
+
+    </script>
+</head>
+<body>
+ <div class="bar bar-header bar-dark">
+  <h1 class="title">Cybernetizen Citizen</h1>
+</div>
+<div class="card" style="margin-top:60px">
+  <div class="item item-divider">
+    Longitude
+</div>
+<div id="longitude" class="item item-text-wrap">
+    Awaiting gelocation..
+</div>
+<div class="item item-divider">
+</div>
+</div>
+<div class="card">
+  <div class="item item-divider">
+    Latitude
+</div>
+<div id="latitude" class="item item-text-wrap">
+    Awaiting geolocation..
+</div>
+<div class="item item-divider">
+</div>
+</div>
+<button onclick="getTweet()" class="button button-block button-positive">
+  Get nearest tweet
+</button>
+
+</body>
+</html>

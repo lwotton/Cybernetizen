@@ -1,30 +1,70 @@
 <html>
 <head>
-    <title>Device Properties Example</title>
+    <title>CyberCitizen</title>
     <link href="css/ionic.css" rel="stylesheet">
     <script src="js/ionic.bundle.js"></script>
     <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript">
     //Twitter
     var cb = new Codebird;
     cb.setConsumerKey("8g521OjdDD4zE7i4aQ6kEtm7c", "KZhbk3fDVOagZw8isOXgE4oFUwGRbCwxcip051uRommPk80QZG");
     cb.setToken("15146063-zSMl0g0wDOtMSHCjswqYlykp9LU3BqwkWwk3yzQOT","apaEUUzNUltgzqgU6X9o6AXtCNcCLVRZmOyU410nM6SiI")
-
+    cb.setProxy("http://www.lukewotton.com/php/codebird-cors-proxy/")
     // Wait for device API libraries to load
-    document.addEventListener("deviceready", onDeviceReady, false);
+    //variables
 
-    // device APIs are available
+    var longitude;
+    var latitude;
+    var radius;
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    $( document ).ready(function() { getTweet() });
+
+    // device APIs are available - happens on initial device activation
     function onDeviceReady() {
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
+        //commented to stop API requests
+        //getTweet();
+    }
+    // called to refresh the current position and tweets
+    function refreshPosition(){
+        navigator.geolocation.getCurrentPosition(onSuccess, onError)
     }
 
     // onSuccess Geolocation
     function onSuccess(position) {
+        
         var longitude = document.getElementById('longitude');
         longitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
+        
+        longitude = position.coords.longitude
+        
         var latitude = document.getElementById('latitude');
         latitude.innerHTML = 'Your current latitude: '+ position.coords.latitude
+        
+        latitude = position.coords.latitude
+        
+        radius = "1mi"
+        
+        locationString = latitude+","+longitude+"."+radius
+
+        var parameters = document.getElementById('parameters');
+        
+        parameters.innerHTML = locationString;
+        
+        var params = {
+        geocode: latitude+","+longitude+","+radius
+        }
+
+        cb.__call(
+        "search_tweets",
+        params,
+        function (reply) {
+            var tweetText = document.getElementById('tweetText');
+            tweetText.innerHTML = (reply.statuses[0].text);       
+        });
     }
 
     // onError Callback receives a PositionError object
@@ -34,8 +74,10 @@
     }
 
     function getTweet(){
+    radius = "1mi"
+    console.log("'"+longitude+","+latitude+","+radius+"'")
     var params = {
-        geocode: "50.3767591,-4.141573,1mi"
+        geocode: "'"+longitude+","+latitude+","+radius+"'" 
     }
 
     cb.__call(
@@ -45,8 +87,10 @@
             var tweetText = document.getElementById('tweetText');
             tweetText.innerHTML = (reply.statuses[0].text);       
         });
+    console.log('refreshed tweet')
     }
-
+    //commented out to save API requests
+    //var refreshTwitter = setInterval(function() {getTweet()},60000);
     </script>
 </head>
 <body>
@@ -73,11 +117,12 @@
 <div class="item item-divider">
 </div>
 </div>
-<button onclick="getTweet()" class="button button-block button-positive">
-  Get nearest tweet
-</button>
 <div class="card">
     <div id="tweetText" class="item item-text-wrap">
+</div>
+</div>
+<div class="card">
+    <div id="parameters" class="item item-text-wrap">
 </div>
 </div>
 
