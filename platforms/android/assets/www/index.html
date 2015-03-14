@@ -7,6 +7,12 @@
     <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript">
+    //Spark Core 
+    var citizenID;
+    var deviceOne;
+    var deviceTwo;
+    var deviceID = '54ff6d066678574950280167';
+
     //Twitter
     var cb = new Codebird;
     cb.setConsumerKey("8g521OjdDD4zE7i4aQ6kEtm7c", "KZhbk3fDVOagZw8isOXgE4oFUwGRbCwxcip051uRommPk80QZG");
@@ -20,40 +26,40 @@
     var radius;
 
     document.addEventListener("deviceready", onDeviceReady, false);
-    $( document ).ready(function() { getTweet() });
 
     // device APIs are available - happens on initial device activation
     function onDeviceReady() {
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
-        //commented to stop API requests
-        //getTweet();
+ 
     }
     // called to refresh the current position and tweets
     function refreshPosition(){
         navigator.geolocation.getCurrentPosition(onSuccess, onError)
     }
-
+    //currently using two calls to twitter but need to remove one and make one on position.
     // onSuccess Geolocation
     function onSuccess(position) {
-        
+
+        //Show lat/long within app
         var longitude = document.getElementById('longitude');
-        longitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
-        
-        longitude = position.coords.longitude
-        
         var latitude = document.getElementById('latitude');
+
+        longitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
         latitude.innerHTML = 'Your current latitude: '+ position.coords.latitude
         
+        //set variable for geostring to geo position from device.
+        longitude = position.coords.longitude
         latitude = position.coords.latitude
-        
         radius = "1mi"
         
+        //setup locationstring to send to Twitter API
         locationString = latitude+","+longitude+"."+radius
 
+        //for easier debugging within Android
         var parameters = document.getElementById('parameters');
-        
         parameters.innerHTML = locationString;
         
+        //send to Twitter API
         var params = {
         geocode: latitude+","+longitude+","+radius
         }
@@ -73,30 +79,90 @@
           'message: ' + error.message + '\n');
     }
 
-    function getTweet(){
-    radius = "1mi"
-    console.log("'"+longitude+","+latitude+","+radius+"'")
-    var params = {
-        geocode: "'"+longitude+","+latitude+","+radius+"'" 
+    function sparkOn(deviceID){
+        $.ajax({
+            type:'POST',
+            url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
+            data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
+            success: function(data) {
+                console.log('SPARK ON!');
+        }
+    })
     }
 
-    cb.__call(
-        "search_tweets",
-        params,
-        function (reply) {
-            var tweetText = document.getElementById('tweetText');
-            tweetText.innerHTML = (reply.statuses[0].text);       
-        });
-    console.log('refreshed tweet')
-    }
-    //commented out to save API requests
-    //var refreshTwitter = setInterval(function() {getTweet()},60000);
+    function sparkOff(deviceID){
+                $.ajax({
+            type:'POST',
+            url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
+            data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
+            success: function(data) {
+                console.log('SPARK OFF!');
+        }
+    })
+    };
+
+    angular.module('mySuperApp', ['ionic'])
+    .controller('PopupCtrl',function($scope, $ionicPopup, $timeout) {
+
+    // Triggered on a button click, or some other target
+    $scope.showPopup = function() {
+      $scope.data = {}
+
+      // An elaborate, custom popup
+      var myPopup = $ionicPopup.show({
+        template: '<input type="password" ng-model="data.wifi">',
+        title: 'Enter Wi-Fi Password',
+        subTitle: 'Please use normal things',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Save</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.wifi) {
+                //don't allow the user to close unless he enters wifi password
+                e.preventDefault();
+              } else {
+                return $scope.data.wifi;
+              }
+            }
+          }
+        ]
+      });
+      myPopup.then(function(res) {
+        console.log('Tapped!', res);
+      });
+      $timeout(function() {
+         myPopup.close(); //close the popup after 3 seconds for some reason
+      }, 3000);
+     };
+     // A confirm dialog
+     $scope.showConfirm = function() {
+       var confirmPopup = $ionicPopup.confirm({
+         title: 'Consume Ice Cream',
+         template: 'Are you sure you want to eat this ice cream?'
+       });
+       confirmPopup.then(function(res) {
+         if(res) {
+           console.log('You are sure');
+         } else {
+           console.log('You are not sure');
+         }
+       });
+     };
+
+    });
+
     </script>
 </head>
 <body>
    <div class="bar bar-header bar-dark">
       <h1 class="title">Cybernetizen Citizen</h1>
   </div>
+  <button style="margin-top:60px;" class="button button-primary" ng-click="showConfirm()">
+      Confirm
+</button>
   <div class="card" style="margin-top:60px">
       <div class="item item-divider">
         Longitude
@@ -117,6 +183,12 @@
 <div class="item item-divider">
 </div>
 </div>
+<button id="spark" onclick="sparkOn(deviceID)" class="button button-full button-positive">
+  FEEL THE POWER
+</button>
+<button id="spark" onclick="sparkOff(deviceID)" class="button button-full button-positive">
+  KILL THE POWER
+</button>
 <div class="card">
     <div id="tweetText" class="item item-text-wrap">
 </div>
