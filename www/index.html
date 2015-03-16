@@ -87,7 +87,7 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
             success: function(data) {
-                alert('SPARK ON!');
+                console.log('SPARK ON!');
         }
     })
     };
@@ -98,7 +98,7 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
             success: function(data) {
-                alert('SPARK OFF!');
+                console.log('SPARK OFF!');
         }
     })
     };
@@ -107,18 +107,21 @@
     .controller('PopupCtrl',function($scope, $ionicPopup) {
 
      $scope.showInput = function(){
+      
+      var citText = document.getElementById('citID');
       var inputPopup = $ionicPopup.prompt({
          title: 'Enter Citizen ID',
          template: 'Enter your Citizen ID',
          inputType: 'text',
          inputPlaceholder: ' Your Citizen ID'
        }).then(function(res) {
-         console.log('Your password is', res);
          if(res=="1"){
-          alert("One")
+          deviceID = sparkOne;
+          citText.innerHTML = "Connected to device " + deviceID;
          }
          if(res=="2"){
-          alert("Two")
+          deviceID = sparkTwo;
+          citText.innerHTML = "Connected to device " + deviceID;
          }else{
           //do nothing
          }
@@ -139,6 +142,12 @@
       Select Citizen ID
   </button>
   
+  <div class="card">
+    <div id="citID" class="item item-text-wrap">
+    Please enter your Citizen ID
+    </div>
+  </div>
+
   <!--Debugging for geolocation-->
   <div class="card" style="margin-top:30px">
     <div class="item item-divider">
