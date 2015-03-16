@@ -1,4 +1,4 @@
-<html>
+<html ng-app="cyberCitizen">
 <head>
     <title>CyberCitizen</title>
     <link href="css/ionic.css" rel="stylesheet">
@@ -11,7 +11,7 @@
     var citizenID;
     var deviceOne;
     var deviceTwo;
-    var deviceID = '54ff6d066678574950280167';
+    var deviceID = '';
 
     //Twitter
     var cb = new Codebird;
@@ -26,7 +26,9 @@
     var radius;
 
     document.addEventListener("deviceready", onDeviceReady, false);
-
+    $( document ).ready(function() {
+    showPopup();
+});
     // device APIs are available - happens on initial device activation
     function onDeviceReady() {
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
@@ -85,7 +87,7 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
             success: function(data) {
-                console.log('SPARK ON!');
+                alert('SPARK ON!');
         }
     })
     }
@@ -96,47 +98,14 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
             success: function(data) {
-                console.log('SPARK OFF!');
+                alert('SPARK OFF!');
         }
     })
     };
 
-    angular.module('mySuperApp', ['ionic'])
-    .controller('PopupCtrl',function($scope, $ionicPopup, $timeout) {
+    angular.module('cyberCitizen', ['ionic'])
+    .controller('PopupCtrl',function($scope, $ionicPopup) {
 
-    // Triggered on a button click, or some other target
-    $scope.showPopup = function() {
-      $scope.data = {}
-
-      // An elaborate, custom popup
-      var myPopup = $ionicPopup.show({
-        template: '<input type="password" ng-model="data.wifi">',
-        title: 'Enter Wi-Fi Password',
-        subTitle: 'Please use normal things',
-        scope: $scope,
-        buttons: [
-          { text: 'Cancel' },
-          {
-            text: '<b>Save</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-              if (!$scope.data.wifi) {
-                //don't allow the user to close unless he enters wifi password
-                e.preventDefault();
-              } else {
-                return $scope.data.wifi;
-              }
-            }
-          }
-        ]
-      });
-      myPopup.then(function(res) {
-        console.log('Tapped!', res);
-      });
-      $timeout(function() {
-         myPopup.close(); //close the popup after 3 seconds for some reason
-      }, 3000);
-     };
      // A confirm dialog
      $scope.showConfirm = function() {
        var confirmPopup = $ionicPopup.confirm({
@@ -151,19 +120,31 @@
          }
        });
      };
-
+     $scope.showInput = function(){
+      var inputPopup = $ionicPopup.prompt({
+         title: 'Enter Citizen ID',
+         template: 'Enter your Citizen ID',
+         inputType: 'text',
+         inputPlaceholder: ' Your Citizen ID'
+       }).then(function(res) {
+         console.log('Your password is', res);
+       });
+     };
     });
-
     </script>
+
 </head>
-<body>
+<body ng-controller="PopupCtrl">
    <div class="bar bar-header bar-dark">
       <h1 class="title">Cybernetizen Citizen</h1>
   </div>
-  <button style="margin-top:60px;" class="button button-primary" ng-click="showConfirm()">
-      Confirm
-</button>
-  <div class="card" style="margin-top:60px">
+    <button style="margin-top:60px;"class="button button-full button-assertive" ng-click="showInput()">
+      Select Citizen ID
+    </button>
+    <script id="popup-template.html" type="text/ng-template">
+      <input ng-model="data.wifi" type="text" placeholder="Password">
+    </script>
+      <div class="card" style="margin-top:30px">
       <div class="item item-divider">
         Longitude
     </div>

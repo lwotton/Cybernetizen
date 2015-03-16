@@ -11,7 +11,9 @@
     var citizenID;
     var deviceOne;
     var deviceTwo;
-    var deviceID = '54ff6d066678574950280167';
+    var sparkOne = "54ff6d066678574950280167"
+    var sparkTwo = '';
+    var deviceID = '';
 
     //Twitter
     var cb = new Codebird;
@@ -26,9 +28,7 @@
     var radius;
 
     document.addEventListener("deviceready", onDeviceReady, false);
-    $( document ).ready(function() {
-    showPopup();
-});
+    
     // device APIs are available - happens on initial device activation
     function onDeviceReady() {
         navigator.geolocation.getCurrentPosition(onSuccess, onError);
@@ -87,10 +87,10 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
             success: function(data) {
-                console.log('SPARK ON!');
+                alert('SPARK ON!');
         }
     })
-    }
+    };
 
     function sparkOff(deviceID){
                 $.ajax({
@@ -98,7 +98,7 @@
             url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
             success: function(data) {
-                console.log('SPARK OFF!');
+                alert('SPARK OFF!');
         }
     })
     };
@@ -106,80 +106,42 @@
     angular.module('cyberCitizen', ['ionic'])
     .controller('PopupCtrl',function($scope, $ionicPopup) {
 
-    // Triggered on a button click, or some other target
-    $scope.showPopup = function() {
-      $scope.data = {}
-
-      // An elaborate, custom popup
-      var myPopup = $ionicPopup.show({
-        template: '<input type="password" ng-model="data.wifi">',
-        title: 'Enter Wi-Fi Password',
-        subTitle: 'Please use normal things',
-        scope: $scope,
-        buttons: [
-          { text: 'Cancel' },
-          {
-            text: '<b>Save</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-              if (!$scope.data.wifi) {
-                //don't allow the user to close unless he enters wifi password
-                e.preventDefault();
-              } else {
-                return $scope.data.wifi;
-              }
-            }
-          }
-        ]
-      });
-      myPopup.then(function(res) {
-        console.log('Tapped!', res);
-      });
-     };
-     // A confirm dialog
-     $scope.showConfirm = function() {
-       var confirmPopup = $ionicPopup.confirm({
-         title: 'Consume Ice Cream',
-         template: 'Are you sure you want to eat this ice cream?'
-       });
-       confirmPopup.then(function(res) {
-         if(res) {
-           console.log('You are sure');
-         } else {
-           console.log('You are not sure');
+     $scope.showInput = function(){
+      var inputPopup = $ionicPopup.prompt({
+         title: 'Enter Citizen ID',
+         template: 'Enter your Citizen ID',
+         inputType: 'text',
+         inputPlaceholder: ' Your Citizen ID'
+       }).then(function(res) {
+         console.log('Your password is', res);
+         if(res=="1"){
+          alert("One")
          }
-       });
-     };
-
-     // An alert dialog
-     $scope.showAlert = function() {
-       var alertPopup = $ionicPopup.alert({
-         title: 'Don\'t eat that!',
-         template: 'It might taste good'
-       });
-       alertPopup.then(function(res) {
-         console.log('Thank you for not eating my delicious ice cream cone');
+         if(res=="2"){
+          alert("Two")
+         }else{
+          //do nothing
+         }
        });
      };
     });
 
-
-
-
     </script>
+
 </head>
 <body ng-controller="PopupCtrl">
-   <div class="bar bar-header bar-dark">
+  
+    <div class="bar bar-header bar-dark">
       <h1 class="title">Cybernetizen Citizen</h1>
-  </div>
-    <button style="margin-top:60px;"class="button button-full button-assertive" ng-click="showPopup()">
+    </div>
+  <!--Input box for CitizenID-->
+  <button style="margin-top:60px;"class="button button-full button-assertive" ng-click="showInput()">
       Select Citizen ID
-    </button>
-    <script id="popup-template.html" type="text/ng-template">
-      <input ng-model="data.wifi" type="text" placeholder="Password">
-    </script>
-      <div class="card" style="margin-top:30px">
-      <div class="item item-divider">
+  </button>
+  
+  <!--Debugging for geolocation-->
+  <div class="card" style="margin-top:30px">
+    <div class="item item-divider">
         Longitude
     </div>
     <div id="longitude" class="item item-text-wrap">
@@ -187,31 +149,39 @@
     </div>
     <div class="item item-divider">
     </div>
-</div>
-<div class="card">
-  <div class="item item-divider">
-    Latitude
-</div>
-<div id="latitude" class="item item-text-wrap">
-    Awaiting geolocation..
-</div>
-<div class="item item-divider">
-</div>
-</div>
-<button id="spark" onclick="sparkOn(deviceID)" class="button button-full button-positive">
+  </div>
+
+  <div class="card">
+    <div class="item item-divider">
+      Latitude
+    </div>
+    <div id="latitude" class="item item-text-wrap">
+        Awaiting geolocation..
+    </div>
+    <div class="item item-divider">
+    </div>
+  </div>
+
+  <!--Test requests to Spark to check connection-->
+  <button id="spark" onclick="sparkOn(deviceID)" class="button button-full button-positive">
   FEEL THE POWER
-</button>
-<button id="spark" onclick="sparkOff(deviceID)" class="button button-full button-positive">
+  </button>
+
+  <button id="spark" onclick="sparkOff(deviceID)" class="button button-full button-positive">
   KILL THE POWER
-</button>
-<div class="card">
+  </button>
+
+  <!--Nearest tweets for debugging-->
+  <div class="card">
     <div id="tweetText" class="item item-text-wrap">
-</div>
-</div>
-<div class="card">
+    </div>
+  </div>
+
+  <!--String sent to Twitter API for debugging-->
+  <div class="card">
     <div id="parameters" class="item item-text-wrap">
-</div>
-</div>
+  </div>
+  </div>
 
 </body>
 </html>
