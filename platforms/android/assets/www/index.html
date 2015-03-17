@@ -107,18 +107,21 @@
     .controller('PopupCtrl',function($scope, $ionicPopup) {
 
      $scope.showInput = function(){
+      
+      var citText = document.getElementById('citID');
       var inputPopup = $ionicPopup.prompt({
          title: 'Enter Citizen ID',
          template: 'Enter your Citizen ID',
          inputType: 'text',
          inputPlaceholder: ' Your Citizen ID'
        }).then(function(res) {
-         console.log('Your password is', res);
          if(res=="1"){
           deviceID = sparkOne;
+          citText.innerHTML = "Connected to device " + deviceID;
          }
          if(res=="2"){
-          deviceID = sparkTwo
+          deviceID = sparkTwo;
+          citText.innerHTML = "Connected to device " + deviceID;
          }else{
           //do nothing
          }
