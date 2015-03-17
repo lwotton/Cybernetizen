@@ -84,11 +84,10 @@
 
             if (result < 0) {
               sentCount = sentCount-1;
-              debugSent.innerHTML = "Negative" + sentCount;
-
+              debugSent.innerHTML = "Negative " + sentCount;
             } else {
               sentCount = sentCount+1;
-              debugSent.innerHTML = "Positive" + sentCount;
+              debugSent.innerHTML = "Positive " + sentCount;
             }       
         });
     }
@@ -102,10 +101,12 @@
     function sparkOn(deviceID){
         $.ajax({
             type:'POST',
-            url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
+            url:'https://api.spark.io/v1/devices/'+deviceID+'/shock',
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
             success: function(data) {
                 console.log('SPARK ON!');
+                navigator.vibrate(3000);
+
         }
     })
     };

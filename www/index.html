@@ -88,6 +88,10 @@
             } else {
               sentCount = sentCount+1;
               debugSent.innerHTML = "Positive " + sentCount;
+            }
+            if(sentCount => 5){
+              sparkOn()
+              sentCount = 0;
             }       
         });
     }
@@ -105,6 +109,8 @@
             data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
             success: function(data) {
                 console.log('SPARK ON!');
+                navigator.vibrate(3000);
+
         }
     })
     };
