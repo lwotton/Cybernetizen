@@ -6,7 +6,9 @@
     <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
     <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/sentiment.js"></script>
     <script type="text/javascript">
+    
     //Spark Core 
     var citizenID;
     var deviceOne;
@@ -14,12 +16,15 @@
     var sparkOne = "54ff6d066678574950280167"
     var sparkTwo = '';
     var deviceID = '';
+    var sentCount = 0;
+
 
     //Twitter
     var cb = new Codebird;
     cb.setConsumerKey("8g521OjdDD4zE7i4aQ6kEtm7c", "KZhbk3fDVOagZw8isOXgE4oFUwGRbCwxcip051uRommPk80QZG");
     cb.setToken("15146063-zSMl0g0wDOtMSHCjswqYlykp9LU3BqwkWwk3yzQOT","apaEUUzNUltgzqgU6X9o6AXtCNcCLVRZmOyU410nM6SiI")
     cb.setProxy("http://www.lukewotton.com/php/codebird-cors-proxy/")
+    
     // Wait for device API libraries to load
     //variables
 
@@ -71,7 +76,20 @@
         params,
         function (reply) {
             var tweetText = document.getElementById('tweetText');
-            tweetText.innerHTML = (reply.statuses[0].text);       
+            tweetText.innerHTML = (reply.statuses[0].text);
+            var analyze = new realSimpleSentiment();
+            var test = (reply.statuses[0].text);
+            var result = analyze.analyzeText(test)
+            var resultDebug = document.getElementById('debugSent');
+
+            if (result < 0) {
+              sentCount = sentCount-1;
+              debugSent.innerHTML = "Negative" + sentCount;
+
+            } else {
+              sentCount = sentCount+1;
+              debugSent.innerHTML = "Positive" + sentCount;
+            }       
         });
     }
 
@@ -183,6 +201,12 @@
   <!--Nearest tweets for debugging-->
   <div class="card">
     <div id="tweetText" class="item item-text-wrap">
+    </div>
+  </div>
+
+  <!--Sentiment analysis-->
+  <div class="card">
+    <div id="debugSent" class="item item-text-wrap">
     </div>
   </div>
 
