@@ -1,14 +1,14 @@
 <html ng-app="cyberCitizen">
 <head>
-    <title>CyberCitizen</title>
-    <link href="css/ionic.css" rel="stylesheet">
-    <script src="js/ionic.bundle.js"></script>
-    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/sentiment.js"></script>
-    <script type="text/javascript">
-    
+  <title>CyberCitizen</title>
+  <link href="css/ionic.css" rel="stylesheet">
+  <script src="js/ionic.bundle.js"></script>
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/sentiment.js"></script>
+  <script type="text/javascript">
+
     //Spark Core 
     var citizenID;
     var deviceOne;
@@ -23,7 +23,7 @@
     var cb = new Codebird;
     cb.setConsumerKey("8g521OjdDD4zE7i4aQ6kEtm7c", "KZhbk3fDVOagZw8isOXgE4oFUwGRbCwxcip051uRommPk80QZG");
     cb.setToken("15146063-zSMl0g0wDOtMSHCjswqYlykp9LU3BqwkWwk3yzQOT","apaEUUzNUltgzqgU6X9o6AXtCNcCLVRZmOyU410nM6SiI")
-    cb.setProxy("http://www.lukewotton.com/php/codebird-cors-proxy/")
+    //cb.setProxy("http://www.lukewotton.com/php/codebird-cors-proxy/")
     
     // Wait for device API libraries to load
     //variables
@@ -36,23 +36,23 @@
     
     // device APIs are available - happens on initial device activation
     function onDeviceReady() {
-        navigator.geolocation.getCurrentPosition(onSuccess, onError);
- 
+      navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
     }
     // called to refresh the current position and tweets
     function refreshPosition(){
-        navigator.geolocation.getCurrentPosition(onSuccess, onError)
+      navigator.geolocation.getCurrentPosition(onSuccess, onError)
     }
     //currently using two calls to twitter but need to remove one and make one on position.
     // onSuccess Geolocation
     function onSuccess(position) {
 
         //Show lat/long within app
-        var longitude = document.getElementById('longitude');
-        var latitude = document.getElementById('latitude');
+        var showLongitude = document.getElementById('longitude');
+        var showLatitude = document.getElementById('latitude');
 
-        longitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
-        latitude.innerHTML = 'Your current latitude: '+ position.coords.latitude
+        showLongitude.innerHTML = 'Your current longitude: '+ position.coords.longitude
+        showLatitude.innerHTML = 'Your current latitude: '+ position.coords.latitude
         
         //set variable for geostring to geo position from device.
         longitude = position.coords.longitude
@@ -68,13 +68,13 @@
         
         //send to Twitter API
         var params = {
-        geocode: latitude+","+longitude+","+radius
+          geocode: latitude+","+longitude+","+radius
         }
 
         cb.__call(
-        "search_tweets",
-        params,
-        function (reply) {
+          "search_tweets",
+          params,
+          function (reply) {
             var tweetText = document.getElementById('tweetText');
             tweetText.innerHTML = (reply.statuses[0].text);
             var analyze = new realSimpleSentiment();
@@ -88,92 +88,118 @@
             } else {
               sentCount = sentCount+1;
               debugSent.innerHTML = "Positive " + sentCount;
+            }
+            if(sentCount >= 5){
+              sparkOn()
+              sentCount = 0;
             }       
-        });
-    }
+          });
+      }
 
     // onError Callback receives a PositionError object
     function onError(error) {
-        alert('code: '    + error.code    + '\n' +
-          'message: ' + error.message + '\n');
+      alert('code: '    + error.code    + '\n' +
+        'message: ' + error.message + '\n');
     }
 
     function sparkOn(deviceID){
-        $.ajax({
-            type:'POST',
-            url:'https://api.spark.io/v1/devices/'+deviceID+'/shock',
-            data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
-            success: function(data) {
-                console.log('SPARK ON!');
-                navigator.vibrate(3000);
+      $.ajax({
+        type:'POST',
+        url:'https://api.spark.io/v1/devices/'+deviceID+'/shock',
+        data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
+        success: function(data) {
+          console.log('SPARK ON!');
+          navigator.vibrate(3000);
 
         }
-    })
+      })
     };
 
     function sparkOff(deviceID){
-                $.ajax({
-            type:'POST',
-            url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
-            data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
-            success: function(data) {
-                console.log('SPARK OFF!');
+      $.ajax({
+        type:'POST',
+        url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
+        data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
+        success: function(data) {
+          console.log('SPARK OFF!');
         }
-    })
+      })
+    };
+
+    function put(lat,long,weight){
+      
+      var dataObj = new Object();
+      
+      dataObj.latitude = lat;
+      dataObj.longitude = long;
+      dataObj.weight = weight;
+
+      var dataJSON = JSON.stringify(dataObj)
+      console.log(dataJSON)
+
+      $.ajax({
+        type:'POST',
+        contentType: 'application/json',
+        url:'http://46.101.40.61/api/v1/location/',
+        data:dataJSON,
+        success: function(error) {
+          console.log(error);
+        }
+      })
     };
 
     angular.module('cyberCitizen', ['ionic'])
     .controller('PopupCtrl',function($scope, $ionicPopup) {
 
      $scope.showInput = function(){
-      
+
       var citText = document.getElementById('citID');
       var inputPopup = $ionicPopup.prompt({
-         title: 'Enter Citizen ID',
-         template: 'Enter your Citizen ID',
-         inputType: 'text',
-         inputPlaceholder: ' Your Citizen ID'
-       }).then(function(res) {
-         if(res=="1"){
-          deviceID = sparkOne;
-          citText.innerHTML = "Connected to device " + deviceID;
-         }
-         if(res=="2"){
-          deviceID = sparkTwo;
-          citText.innerHTML = "Connected to device " + deviceID;
-         }else{
+       title: 'Enter Citizen ID',
+       template: 'Enter your Citizen ID',
+       inputType: 'text',
+       inputPlaceholder: ' Your Citizen ID'
+     }).then(function(res) {
+       if(res=="1"){
+        deviceID = sparkOne;
+        citText.innerHTML = "Connected to device " + deviceID;
+      }
+      if(res=="2"){
+        deviceID = sparkTwo;
+        citText.innerHTML = "Connected to device " + deviceID;
+      }else{
           //do nothing
-         }
-       });
-     };
-    });
+        }
+      });
+   };
+ });
 
-    </script>
+  </script>
 
 </head>
 <body ng-controller="PopupCtrl">
-  
-    <div class="bar bar-header bar-dark">
-      <h1 class="title">Cybernetizen Citizen</h1>
-    </div>
+
+  <div class="bar bar-header bar-dark">
+    <h1 class="title">Cybernetizen Citizen</h1>
+  </div>
   <!--Input box for CitizenID-->
   <button style="margin-top:60px;"class="button button-full button-assertive" ng-click="showInput()">
-      Select Citizen ID
+    Select Citizen ID
   </button>
   
   <div class="card">
     <div id="citID" class="item item-text-wrap">
-    Please enter your Citizen ID
+      Please enter your Citizen ID
     </div>
   </div>
 
   <!--Debugging for geolocation-->
   <div class="card" style="margin-top:30px">
     <div class="item item-divider">
-        Longitude
+      Longitude
     </div>
     <div id="longitude" class="item item-text-wrap">
-        Awaiting gelocation..
+      Awaiting gelocation..
     </div>
     <div class="item item-divider">
     </div>
@@ -184,7 +210,7 @@
       Latitude
     </div>
     <div id="latitude" class="item item-text-wrap">
-        Awaiting geolocation..
+      Awaiting geolocation..
     </div>
     <div class="item item-divider">
     </div>
@@ -192,11 +218,15 @@
 
   <!--Test requests to Spark to check connection-->
   <button id="spark" onclick="sparkOn(deviceID)" class="button button-full button-positive">
-  FEEL THE POWER
+    FEEL THE POWER
   </button>
 
   <button id="spark" onclick="sparkOff(deviceID)" class="button button-full button-positive">
-  KILL THE POWER
+    KILL THE POWER
+  </button>
+
+  <button id="spark" onclick="put(50.3,4.5,0.3)" class="button button-full button-positive">
+    PUT TEST
   </button>
 
   <!--Nearest tweets for debugging-->
@@ -214,7 +244,7 @@
   <!--String sent to Twitter API for debugging-->
   <div class="card">
     <div id="parameters" class="item item-text-wrap">
-  </div>
+    </div>
   </div>
 
 </body>
