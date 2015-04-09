@@ -2,6 +2,7 @@
 <head>
   <title>CyberCitizen</title>
   <link href="css/ionic.css" rel="stylesheet">
+  <link href="css/ionicons.css" rel="stylesheet">
   <script src="js/ionic.bundle.js"></script>
   <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/codebird.js"></script>
@@ -142,9 +143,13 @@
         contentType: 'application/json',
         url:'http://46.101.40.61/api/v1/location/',
         data:dataJSON,
-        success: function(error) {
-          console.log(error);
-        }
+        success: function(data) {
+          console.log("Posted");
+          console.log(data);
+        },
+        error: function(errorThrown) {
+          console.log(errorThrown);
+        },
       })
     };
 
@@ -181,20 +186,21 @@
 
   <div class="bar bar-header bar-dark">
     <h1 class="title">Cybernetizen Citizen</h1>
-  </div>
   <!--Input box for CitizenID-->
-  <button style="margin-top:60px;"class="button button-full button-assertive" ng-click="showInput()">
-    Select Citizen ID
+  <button class="button icon ion-android-options" ng-click="showInput()">
   </button>
+</div>
   
-  <div class="card">
+  <div class="card" style="margin-top:60px;">
     <div id="citID" class="item item-text-wrap">
       Please enter your Citizen ID
     </div>
   </div>
 
   <!--Debugging for geolocation-->
-  <div class="card" style="margin-top:30px">
+  <div class="row">
+  <div class="col-m-6">
+  <div class="card">
     <div class="item item-divider">
       Longitude
     </div>
@@ -203,8 +209,9 @@
     </div>
     <div class="item item-divider">
     </div>
+    </div>
   </div>
-
+  <div class="col-m-6">
   <div class="card">
     <div class="item item-divider">
       Latitude
@@ -215,19 +222,8 @@
     <div class="item item-divider">
     </div>
   </div>
-
-  <!--Test requests to Spark to check connection-->
-  <button id="spark" onclick="sparkOn(deviceID)" class="button button-full button-positive">
-    FEEL THE POWER
-  </button>
-
-  <button id="spark" onclick="sparkOff(deviceID)" class="button button-full button-positive">
-    KILL THE POWER
-  </button>
-
-  <button id="spark" onclick="put(50.3,4.5,0.3)" class="button button-full button-positive">
-    PUT TEST
-  </button>
+  </div>
+  </div>
 
   <!--Nearest tweets for debugging-->
   <div class="card">
