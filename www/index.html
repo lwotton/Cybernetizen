@@ -15,7 +15,6 @@
     var deviceOne;
     var deviceTwo;
     var sparkOne = "54ff6d066678574950280167"
-    var sparkTwo = '';
     var deviceID = '';
     var sentCount = 0;
 
@@ -49,11 +48,9 @@
     function onSuccess(position) {
 
         //Show lat/long within app
-        var showLongitude = document.getElementById('longitude');
-        var showLatitude = document.getElementById('latitude');
+        var showGeolocation = document.getElementById('geolocation');
 
-        showLongitude.innerHTML = position.coords.longitude
-        showLatitude.innerHTML = position.coords.latitude
+        geolocation.innerHTML = "Your current position:" + position.coords.latitude +' '+position.coords.longitude
         
         //set variable for geostring to geo position from device.
         longitude = position.coords.longitude
@@ -153,78 +150,55 @@
       })
     };
 
-    angular.module('cyberCitizen', ['ionic'])
-    .controller('PopupCtrl',function($scope, $ionicPopup) {
+ //    angular.module('cyberCitizen', ['ionic'])
+ //    .controller('PopupCtrl',function($scope, $ionicPopup) {
 
-     $scope.showInput = function(){
+ //     $scope.showInput = function(){
 
-      var citText = document.getElementById('citID');
-      var inputPopup = $ionicPopup.prompt({
-       title: 'Enter Citizen ID',
-       template: 'Enter your Citizen ID',
-       inputType: 'text',
-       inputPlaceholder: ' Your Citizen ID'
-     }).then(function(res) {
-       if(res=="1"){
-        deviceID = sparkOne;
-        citText.innerHTML = "Connected to " + deviceID;
-      }
-      if(res=="2"){
-        deviceID = sparkTwo;
-        citText.innerHTML = "Connected to " + deviceID;
-      }else{
-          //do nothing
-        }
-      });
-   };
- });
+ //      var citText = document.getElementById('citID');
+ //      var inputPopup = $ionicPopup.prompt({
+ //       title: 'Enter Citizen ID',
+ //       template: 'Enter your Citizen ID',
+ //       inputType: 'text',
+ //       inputPlaceholder: ' Your Citizen ID'
+ //     }).then(function(res) {
+ //       if(res=="1"){
+ //        deviceID = sparkOne;
+ //        citText.innerHTML = "Connected to " + deviceID;
+ //      }
+ //      if(res=="2"){
+ //        deviceID = sparkTwo;
+ //        citText.innerHTML = "Connected to " + deviceID;
+ //      }else{
+ //          //do nothing
+ //        }
+ //      });
+ //   };
+ // });
 
   </script>
 
 </head>
-<body ng-controller="PopupCtrl">
+<body style="background-color:#000000;8" onload="window.plugins.insomnia.keepAwake()">
 
   <div class="bar bar-header bar-dark">
     <h1 class="title">Cybernetizen Citizen</h1>
   <!--Input box for CitizenID-->
-  <button class="button icon ion-android-options" ng-click="showInput()">
+<!--   <button class="button icon ion-android-options" ng-click="showInput()">
   </button>
-</div>
+ --></div>
   
-  <div class="card" style="margin-top:60px;">
+<!--   <div class="card" style="margin-top:60px;">
     <div id="citID" class="item item-text-wrap">
       Please enter your Citizen ID
     </div>
-  </div>
-
+  </div> -->
+  <img src="img/cybernetic.png" style="display:block;margin-left:auto;margin-right:auto;margin-top:60px;"/>
   <!--Debugging for geolocation-->
-  <div class="row">
-  <div class="col-m-6">
   <div class="card">
-    <div class="item item-divider">
-      Longitude
-    </div>
-    <div id="longitude" class="item item-text-wrap">
-      Awaiting gelocation..
-    </div>
-    <div class="item item-divider">
-    </div>
-    </div>
-  </div>
-  <div class="col-m-6">
-  <div class="card">
-    <div class="item item-divider">
-      Latitude
-    </div>
-    <div id="latitude" class="item item-text-wrap">
-      Awaiting geolocation..
-    </div>
-    <div class="item item-divider">
-    </div>
+  <div id="geolocation" class="item item-text-wrap">
   </div>
   </div>
-  </div>
-
   <!--Nearest tweets for debugging-->
   <div class="card">
     <div id="tweetText" class="item item-text-wrap">

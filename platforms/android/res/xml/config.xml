@@ -4,6 +4,9 @@
     <feature name="Vibration">
         <param name="android-package" value="org.apache.cordova.vibration.Vibration" />
     </feature>
+    <feature name="Insomnia">
+        <param name="android-package" value="nl.xservices.plugins.Insomnia" />
+    </feature>
     <name>Cybernetic Citien</name>
     <description>
 	Cybernetic Citizen

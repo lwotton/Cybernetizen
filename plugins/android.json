@@ -31,6 +31,10 @@
                         {
                             "xml": "<feature name=\"Vibration\"><param name=\"android-package\" value=\"org.apache.cordova.vibration.Vibration\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Insomnia\"><param name=\"android-package\" value=\"nl.xservices.plugins.Insomnia\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -42,6 +46,9 @@
             "PACKAGE_NAME": "com.example.hello"
         },
         "org.apache.cordova.vibration": {
+            "PACKAGE_NAME": "com.example.hello"
+        },
+        "nl.x-services.plugins.insomnia": {
             "PACKAGE_NAME": "com.example.hello"
         }
     },
