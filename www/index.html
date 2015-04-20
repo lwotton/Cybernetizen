@@ -11,12 +11,28 @@
   <script type="text/javascript">
 
     //Spark Core 
+    //hotspot- spark
+    //password -'12345'
+    //public functions
+    //sentiment, call plus or minus.
+    //if sent == 5 = turn shock on.
+
+    //curl https://api.spark.io/v1/devices/54ff6d066678574950280167/sentiment      -d access_token=6abc8ba9aefb5ac533c63871c725cf046ebdbb09      -d "args=plus" --verbose
+
+
     var citizenID;
     var deviceOne;
     var deviceTwo;
     var sparkOne = "54ff6d066678574950280167"
     var deviceID = '';
     var sentCount = 0;
+    var weight = 0;
+
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
 
 
     //Twitter
@@ -31,17 +47,18 @@
     var longitude;
     var latitude;
     var radius;
+    
 
     document.addEventListener("deviceready", onDeviceReady, false);
     
     // device APIs are available - happens on initial device activation
     function onDeviceReady() {
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
-
+      navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+      window.plugins.insomnia.keepAwake()
     }
     // called to refresh the current position and tweets
     function refreshPosition(){
-      navigator.geolocation.getCurrentPosition(onSuccess, onError)
+      navigator.geolocation.getCurrentPosition(onSuccess, onError, options)
     }
     //currently using two calls to twitter but need to remove one and make one on position.
     // onSuccess Geolocation
@@ -55,7 +72,7 @@
         //set variable for geostring to geo position from device.
         longitude = position.coords.longitude
         latitude = position.coords.latitude
-        radius = "1mi"
+        radius = "2mi"
         
         //setup locationstring to send to Twitter API
         locationString = latitude+","+longitude+"."+radius
@@ -83,15 +100,18 @@
             if (result < 0) {
               sentCount = sentCount-1;
               debugSent.innerHTML = "Negative " + sentCount;
+              weight = 0.5;
             } else {
               sentCount = sentCount+1;
               debugSent.innerHTML = "Positive " + sentCount;
+              weight = 0.1;
             }
             if(sentCount >= 5){
               sparkOn()
               sentCount = 0;
             }       
           });
+
       }
 
     // onError Callback receives a PositionError object
@@ -100,7 +120,7 @@
         'message: ' + error.message + '\n');
     }
 
-    function sparkOn(deviceID){
+    function sentPlus(deviceID){
       $.ajax({
         type:'POST',
         url:'https://api.spark.io/v1/devices/'+deviceID+'/shock',
@@ -113,7 +133,7 @@
       })
     };
 
-    function sparkOff(deviceID){
+    function sentMinus(deviceID){
       $.ajax({
         type:'POST',
         url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
@@ -149,11 +169,13 @@
         },
       })
     };
+  window.setInterval(function() {refreshPosition()},10000);
+  window.setInterval(function() {put(latitude,longitude,weight)},15000);
 
   </script>
 
 </head>
-<body style="background-color:#000000;8" onload="window.plugins.insomnia.keepAwake()">
+<body style="background-color:#000000;8">
 
   <div class="bar bar-header bar-dark">
     <h1 class="title">Cybernetizen Citizen</h1>
