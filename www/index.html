@@ -19,19 +19,10 @@
 
     //curl https://api.spark.io/v1/devices/54ff6d066678574950280167/sentiment      -d access_token=6abc8ba9aefb5ac533c63871c725cf046ebdbb09      -d "args=plus" --verbose
 
-
-    var citizenID;
-    var deviceOne;
-    var deviceTwo;
-    var sparkOne = "54ff6d066678574950280167"
-    var deviceID = '';
-    var sentCount = 0;
     var weight = 0;
 
     var options = {
       enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0
     };
 
 
@@ -98,19 +89,20 @@
             var resultDebug = document.getElementById('debugSent');
 
             if (result < 0) {
-              sentCount = sentCount-1;
-              debugSent.innerHTML = "Negative " + sentCount;
-              weight = 0.5;
+              weight = 0.5;              
+              debugSent.innerHTML = "Negative " + weight;
+              sentMinus();
             } else {
-              sentCount = sentCount+1;
-              debugSent.innerHTML = "Positive " + sentCount;
-              weight = 0.1;
+              weight = 0.1;              
+              debugSent.innerHTML = "Positive " + weight;
+              sentPlus();
             }
-            if(sentCount >= 5){
-              sparkOn()
-              sentCount = 0;
-            }       
           });
+
+        var d = new Date();
+        var time = document.getElementById('time');
+
+        time.innerHTML = "Time last checked " + d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
 
       }
 
@@ -120,26 +112,26 @@
         'message: ' + error.message + '\n');
     }
 
-    function sentPlus(deviceID){
+    function sentPlus(){
       $.ajax({
         type:'POST',
-        url:'https://api.spark.io/v1/devices/'+deviceID+'/shock',
-        data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"on"},
+        url:'https://api.spark.io/v1/devices/54ff6d066678574950280167/sentiment',
+        data:{access_token:"6abc8ba9aefb5ac533c63871c725cf046ebdbb09",args:"plus"},
         success: function(data) {
-          console.log('SPARK ON!');
-          navigator.vibrate(3000);
+          console.log('going up');
+          navigator.vibrate(500);
 
         }
       })
     };
 
-    function sentMinus(deviceID){
+    function sentMinus(){
       $.ajax({
         type:'POST',
-        url:'https://api.spark.io/v1/devices/'+deviceID+'/led',
-        data:{access_token:"939bf23de5639addcb72e11f49fb2e9e09c1b899",args:"off"},
+        url:'https://api.spark.io/v1/devices/54ff6d066678574950280167/sentiment',
+        data:{access_token:"6abc8ba9aefb5ac533c63871c725cf046ebdbb09",args:"minus"},
         success: function(data) {
-          console.log('SPARK OFF!');
+          console.log('going down!');
         }
       })
     }
@@ -210,6 +202,10 @@
   <!--String sent to Twitter API for debugging-->
   <div class="card">
     <div id="parameters" class="item item-text-wrap">
+    </div>
+  </div>
+    <div class="card">
+    <div id="time" class="item item-text-wrap">
     </div>
   </div>
 
